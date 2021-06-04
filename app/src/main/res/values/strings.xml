@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">IMDB Movie Database</string>
+    <string name="app">IMDB Movie Database</string>
+    <string name="register_movie">Register Movie</string>
+    <string name="display_movies">Display Movies</string>
+    <string name="ratings">Ratings</string>
+    <string name="search">Search</string>
+    <string name="edit_movies">Edit Movies</string>
+    <string name="favourites">Favourites</string>
+    <string name="enter_movie_details">Enter Movie Details.</string>
+    <string name="movie_title">Movie Title</string>
+    <string name="released_year">Released year</string>
+    <string name="director">Director</string>
+    <string name="actors_actresses">Actors / Actresses</string>
+    <string name="ratings_from_1_10">Ratings from 1 - 10</string>
+    <string name="reviews">Reviews</string>
+    <string name="add_to_favourites">Add to Favourites</string>
+</resources>

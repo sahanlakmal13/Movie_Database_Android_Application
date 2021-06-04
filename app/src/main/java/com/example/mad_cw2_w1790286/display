@@ -1,0 +1,133 @@
+package com.example.mad_cw2_w1790286;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckedTextView;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+public class DisplayMoviesActivity extends AppCompatActivity{
+
+    private ListView movieList;
+    private Button addToFav;
+    public static final String TAG = "ListViewExample";
+    ArrayList<UserAccount> movieNames = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_display_movies);
+
+        movieList = findViewById(R.id.scroll);
+        addToFav = findViewById(R.id.addToFavBtn);
+        MovieDatabase mDB = new MovieDatabase(this);
+        this.movieList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
+        Cursor cursor = mDB.getMoviesFromDatabase();
+        if(cursor.getCount() == 0){
+            Toast.makeText(DisplayMoviesActivity.this, "No Movies Exists", Toast.LENGTH_SHORT).show();
+            return;
+        }else {
+            while(cursor.moveToNext()){
+                int id = cursor.getInt(0);
+                String title = cursor.getString(1);
+                int year = cursor.getInt(2);
+                String director = cursor.getString(3);
+                String cast = cursor.getString(4);
+                int rating = cursor.getInt(5);
+                String review = cursor.getString(6);
+                UserAccount movie = new UserAccount(title,year,director,cast,rating,review);
+                movieNames.add(movie);
+            }
+        }
+        //StringBuffer buffer = new StringBuffer();
+
+
+        //Collections.sort(movieNames);
+
+        movieList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+//                CheckedTextView checkedTextView = ((CheckedTextView)view);
+//                checkedTextView.setChecked(!checkedTextView.isChecked());
+
+                Log.i(TAG, "onItemClick: " +position);
+                CheckedTextView v = (CheckedTextView) view;
+                boolean currentCheck = v.isChecked();
+                System.out.println(movieList.getItemAtPosition(position));
+                UserAccount user = (UserAccount) movieList.getItemAtPosition(position);
+                user.setActive(!currentCheck);
+            }
+        });
+
+        addToFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                printSelectedItems();
+            }
+        });
+        this.initListViewData();
+
+//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            // change the checkbox state
+//            CheckedTextView checkedTextView = ((CheckedTextView)view);
+//            checkedTextView.setChecked(!checkedTextView.isChecked());
+//        }
+
+        //AlertDialog.Builder builder = new AlertDialog.Builder(DisplayMoviesActivity.this);
+        //builder.setCancelable(true);
+        //builder.setTitle("User Entries");
+        //builder.setMessage(buffer.toString());
+        //builder.show();
+    }
+    private void initListViewData(){
+
+        ArrayList<String> movies = new ArrayList<>();
+        for (int i =0; i<movieNames.size(); i++){
+            movies.add(movieNames.get(i).getTitle());
+            System.out.println(movieNames.get(i).getTitle());
+        }
+
+        // android.R.layout.simple_list_item_checked:
+        // ListItem is very simple (Only one CheckedTextView).
+        ArrayAdapter<UserAccount> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_checked , movieNames);
+
+        this.movieList.setAdapter(arrayAdapter);
+
+        for(int i=0;i< movieNames.size(); i++ )  {
+            this.movieList.setItemChecked(i,movieNames.get(i).isActive());
+        }
+    }
+
+    public void printSelectedItems()  {
+
+        SparseBooleanArray sp = movieList.getCheckedItemPositions();
+
+        StringBuilder sb= new StringBuilder();
+
+        for(int i=0;i<sp.size();i++){
+            if(sp.valueAt(i)==true){
+                System.out.println(movieList.getItemAtPosition(i));
+                UserAccount user = (UserAccount) movieList.getItemAtPosition(i);
+                // Or:
+                //String s = ((CheckedTextView) movieList.getChildAt(i)).getText().toString();
+                //
+                String s = user.getTitle();
+                sb = sb.append(" "+s);
+            }
+        }
+        Toast.makeText(this, "Selected items are: "+sb.toString(), Toast.LENGTH_LONG).show();
+    }
+}
